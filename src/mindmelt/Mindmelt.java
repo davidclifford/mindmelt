@@ -287,21 +287,21 @@ public class Mindmelt extends SimpleApplication
 
     void initPlayer()
     {
-        float sc = SubRender.SC;
-        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(sc/3f,sc, 1);
+        float SC = SubRender.SC;
+        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(SC/3f,SC, 1);
         //bulletAppState.getPhysicsSpace().remove(player);
         //SphereCollisionShape sphereShape = new SphereCollisionShape(2f);
         //capsuleShape.setMargin(1f);
-        player = new CharacterControl(capsuleShape,sc/8f );
+        player = new CharacterControl(capsuleShape,SC/8f );
         if (levelName.equals("world")) 
-            cam.setLocation(new Vector3f(118*sc, 10*sc, 115*sc));
+            cam.setLocation(new Vector3f(118*SC, 10*SC, 115*SC));
         else
-            cam.setLocation(new Vector3f(4*sc, 10*sc, 4*sc));            
+            cam.setLocation(new Vector3f(4*SC, 10*SC, 4*SC));            
         player.addCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_01);
         player.removeCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_02);
         player.addCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_03);
-        player.setJumpSpeed(sc*6);
-        player.setFallSpeed(sc*8);
+        player.setJumpSpeed(SC*6);
+        player.setFallSpeed(SC*8);
         player.setGravity(100);
         player.setMaxSlope(FastMath.PI/3.3f);
         player.setPhysicsLocation(cam.getLocation());
