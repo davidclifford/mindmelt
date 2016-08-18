@@ -31,7 +31,7 @@ public class World implements IBlockAccess
     {
         Vec3i pos = new Vec3i(x>>4,y>>4,z>>4);
         Chunk chunk = (Chunk)chunks.get(pos.toString());
-        if (chunk==null) return null;
+        if (chunk==null) return Block.newBlock(BlockType.air.id);
         return chunk.getBlock(x, y, z);
     }
     
