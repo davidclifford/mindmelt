@@ -26,24 +26,32 @@ public class MonsterControl extends AbstractControl
     {
         Obj player = level.getObject(0);
         float dist = monster.distance(player);
-        int xx = (int)monster.x;
-        int yy = (int)monster.y;
-        int zz = (int)monster.z;
+        float xx = monster.x;
+        float yy = monster.y;
+        float zz = monster.z;
+        float turn = 0.1f;
         if (dist>smellDistance) {
             // Wait for movement
             // Try to move forward
-            int xv[] = {0,-1,-1,-1,0,1,1,1};
-            int zv[] = {-1,-1,0,1,1,1,0,-1};
-            System.out.println("1 dir = "+dir+" xx="+xx+" yy="+yy+" zz="+zz);
-            xx = xx+xv[dir];
-            zz = zz+zv[dir];
-            System.out.println("2 dir = "+dir+" xx="+xx+" yy="+yy+" zz="+zz);
-            if (monster.canMoveInto(level.getWorld(), xx, yy, zz)) {
-                if (monster.moveTo(new Vec3i(xx,yy,zz),speed*tpf))
-                        return;
+            float xv[] = {0f,-1f,-1f,-1f,0f,1f,1f,1f};
+            float zv[] = {-1f,-1f,0,1f,1f,1f,0,-1f};
+            float xc[] = {0f,-0.5f,-0.5f,-0.5f,0f,0.5f,0.5f,0.5f};
+            float zc[] = {-0.5f,-0.5f,0,0.5f,0.5f,0.5f,0,-0.5f};
+//            System.out.println("1 dir = "+dir+" xx="+xx+" yy="+yy+" zz="+zz);
+            float nx = xx+xv[dir];
+            float nz = zz+zv[dir];
+            float cx = xx + xc[dir];
+            float cz = zz + zc[dir];
+//            System.out.println("2 dir = "+dir+" xx="+xx+" yy="+yy+" zz="+zz);
+            if (monster.canMoveInto(level.getWorld(), (int)cx, (int)yy, (int)cz)) {
+                if (monster.moveTo(new Vec3i(nx,yy,nz),speed*tpf))
+                        turn = 0.001f;
+            } else {
+                turn = 0.1f;
             }
-            if (r.nextFloat()<0.1f) {
-                if (r.nextFloat()>0.5f) dir++; else dir--;
+            if (r.nextFloat()<turn) {
+                speed = r.nextFloat()*3f+3f;
+                if (r.nextFloat()>0.5f) dir+=1; else dir-=1;
                 if (dir>7) dir -= 8;
                 if (dir<0) dir += 8;
                 monster.turnTo(dir*2);
