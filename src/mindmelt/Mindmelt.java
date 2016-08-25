@@ -56,7 +56,7 @@ public class Mindmelt extends SimpleApplication
     boolean controlKey = false;
     boolean shiftKey = false;
     boolean altKey = false;
-    String levelName = "world";
+    String levelName = "abbey";
     Vector3f collisionPoint = new Vector3f(Vector3f.ZERO);
     private CharacterControl player;
     private boolean onLadder = false;

@@ -19,30 +19,32 @@ public class MonsterControl extends AbstractControl
     private static int attackDistance = 2;
     private Random r = new Random();
     private float speed = r.nextFloat()*3f+3f;
-    private int dir = 0;
 
     @Override
     protected void controlUpdate(float tpf) 
     {
+        int dir = monster.getDir()/2;
         Obj player = level.getObject(0);
         float dist = monster.distance(player);
         float xx = monster.x;
         float yy = monster.y;
         float zz = monster.z;
         float turn = 0.1f;
+
+        System.out.println("mon = "+monster.id+" x = "+xx+" y = "+yy+" z= "+zz+" dir = "+dir);
+        // Calculate new position to move forward to
+        float xv[] = {0f,-1f,-1f,-1f,0f,1f,1f,1f};
+        float zv[] = {-1f,-1f,0,1f,1f,1f,0,-1f};
+        float xc[] = {0f,-0.5f,-0.5f,-0.5f,0f,0.5f,0.5f,0.5f};
+        float zc[] = {-0.5f,-0.5f,0,0.5f,0.5f,0.5f,0,-0.5f};
+//            System.out.println("1 dir = "+dir+" xx="+xx+" yy="+yy+" zz="+zz);
+        float nx = xx+xv[dir];
+        float nz = zz+zv[dir];
+        float cx = xx + xc[dir];
+        float cz = zz + zc[dir];        
+
         if (dist>smellDistance) {
             // Wait for movement
-            // Try to move forward
-            float xv[] = {0f,-1f,-1f,-1f,0f,1f,1f,1f};
-            float zv[] = {-1f,-1f,0,1f,1f,1f,0,-1f};
-            float xc[] = {0f,-0.5f,-0.5f,-0.5f,0f,0.5f,0.5f,0.5f};
-            float zc[] = {-0.5f,-0.5f,0,0.5f,0.5f,0.5f,0,-0.5f};
-//            System.out.println("1 dir = "+dir+" xx="+xx+" yy="+yy+" zz="+zz);
-            float nx = xx+xv[dir];
-            float nz = zz+zv[dir];
-            float cx = xx + xc[dir];
-            float cz = zz + zc[dir];
-//            System.out.println("2 dir = "+dir+" xx="+xx+" yy="+yy+" zz="+zz);
             if (monster.canMoveInto(level.getWorld(), (int)cx, (int)yy, (int)cz)) {
                 if (monster.moveTo(new Vec3i(nx,yy,nz),speed*tpf))
                         turn = 0.001f;
@@ -55,6 +57,13 @@ public class MonsterControl extends AbstractControl
                 if (dir>7) dir -= 8;
                 if (dir<0) dir += 8;
                 monster.turnTo(dir*2);
+            }
+        } else if(dist>attackDistance){
+            // Go towards player
+            if (!monster.turnTowards(player, tpf)) {
+                if (monster.canMoveInto(level.getWorld(),(int)cx, (int)yy, (int)cz)) {
+                    monster.moveTo(new Vec3i(nx,yy,nz),speed*tpf);
+                }
             }
         }
     }
