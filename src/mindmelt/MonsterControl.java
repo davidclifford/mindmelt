@@ -16,21 +16,32 @@ public class MonsterControl extends AbstractControl
     private ObjMonster monster;
     private LevelMap level;
     private static int smellDistance = 10;
-    private static int attackDistance = 2;
+    private static int attackDistance = 3;
     private Random r = new Random();
-    private float speed = r.nextFloat()*3f+3f;
+    private float speed = r.nextFloat()*2f+2f;
 
     @Override
     protected void controlUpdate(float tpf) 
     {
-        int dir = monster.getDir()/2;
         Obj player = level.getObject(0);
         float dist = monster.distance(player);
         float xx = monster.x;
         float yy = monster.y;
         float zz = monster.z;
         float turn = 0.1f;
+        
+        if (dist<smellDistance) {
+            float bx = player.x - xx;
+            float bz = player.z - zz;
+            float targetAngle = (FastMath.atan2(bx,bz)+FastMath.PI)/FastMath.TWO_PI*16f;
+            int nearest = (int)(targetAngle+0.5f);
+            if (nearest>15) nearest -= 16;
+            nearest = nearest/2*2;
+            System.out.println("Target A = "+nearest);
+            monster.turnTo(nearest);
+        }
 
+        int dir = monster.getDir()/2;
         System.out.println("mon = "+monster.id+" x = "+xx+" y = "+yy+" z= "+zz+" dir = "+dir);
         // Calculate new position to move forward to
         float xv[] = {0f,-1f,-1f,-1f,0f,1f,1f,1f};
@@ -46,24 +57,21 @@ public class MonsterControl extends AbstractControl
         if (dist>smellDistance) {
             // Wait for movement
             if (monster.canMoveInto(level.getWorld(), (int)cx, (int)yy, (int)cz)) {
-                if (monster.moveTo(new Vec3i(nx,yy,nz),speed*tpf))
-                        turn = 0.001f;
+                monster.moveTo(new Vec3i(nx,yy,nz),speed*tpf);
+                turn = 0.001f;
             } else {
                 turn = 0.1f;
             }
             if (r.nextFloat()<turn) {
-                speed = r.nextFloat()*3f+3f;
+                speed = r.nextFloat()*2f+2f;
                 if (r.nextFloat()>0.5f) dir+=1; else dir-=1;
                 if (dir>7) dir -= 8;
                 if (dir<0) dir += 8;
                 monster.turnTo(dir*2);
             }
-        } else if(dist>attackDistance){
-            // Go towards player
-            if (!monster.turnTowards(player, tpf)) {
-                if (monster.canMoveInto(level.getWorld(),(int)cx, (int)yy, (int)cz)) {
-                    monster.moveTo(new Vec3i(nx,yy,nz),speed*tpf);
-                }
+        } else if (dist>attackDistance) {
+            if (monster.canMoveInto(level.getWorld(), (int)cx, (int)yy, (int)cz)) {
+                monster.moveTo(new Vec3i(nx,yy,nz),speed*tpf);            
             }
         }
     }

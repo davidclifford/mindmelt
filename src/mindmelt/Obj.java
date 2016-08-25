@@ -66,13 +66,19 @@ public class Obj {
         return shape;
     }
     
-    private void moveShape()
+    public int getDir()
+    {
+        return (int)(dir);
+    }
+    
+    private Obj moveShape()
     {
         float SC = SubRender.SC;       
         float xx = x*SC;
         float yy = y*SC+SC/2f;
         float zz = z*SC;
         if (shape!=null) shape.setLocalTranslation(xx, yy, zz);
+        return this;
     }
 
     public Obj moveTo(float x, float y, float z)
@@ -80,8 +86,7 @@ public class Obj {
         this.x=x;
         this.y=y;
         this.z=z;
-        moveShape();
-        return this;
+        return moveShape();
     }
     
     public Obj moveTo(Vec3i pos)
@@ -89,18 +94,16 @@ public class Obj {
         x = pos.x+off;
         y = pos.y;
         z = pos.z+off;
-        moveShape();
-        return this;
+        return moveShape();
     }
            
-    public boolean moveTo(Vec3i newPos, float speed)
+    public Obj moveTo(Vec3i newPos, float speed)
     {
         float tol = 0.01f;
         float dx = (newPos.x+off-x)*speed;
         float dy = (newPos.y-y)*speed;
         float dz = (newPos.z+off-z)*speed;
-        moveBy(dx,dy,dz);
-        return true;
+        return moveBy(dx,dy,dz);
     }
        
     public float distance(Obj other)
@@ -118,10 +121,12 @@ public class Obj {
     }
     
     public Obj rotateBy(float a) {
+        if (a>16f || a<-16f) return this;
         if (shape!=null) shape.rotate(0,a*FastMath.PI/8f,0);
         dir += a;
         if (dir<0f) dir += 16f;
         if (dir>16f) dir -= 16f;
+        System.out.println("rotateBy: dir = "+dir+" a = "+a);
         return this;
     }    
        
@@ -132,7 +137,21 @@ public class Obj {
         Quaternion q = new Quaternion(angs);
         shape.setLocalRotation(q);
         dir = ang;
+        System.out.println("turnTo: dir = "+dir+" ang: "+ang);
         return this;
+    }
+
+    public Obj turnTowards(Obj other)
+    {
+        Vector3f vec = new Vector3f(x-other.x,0,z-other.z).normalize();
+        float target = FastMath.atan2(vec.x,vec.z)+FastMath.PI;
+        Quaternion q = shape.getWorldRotation();
+        float a[] = q.toAngles(null);
+        float current = a[1];
+        // make target 1 of 8 compass points N,NE,E,SE,S,SW,W or NW
+        target = ((int)(target/FastMath.PI*4f))/4f*FastMath.PI;
+        System.out.println("Target "+target);
+        return turnTo(target);
     }
     
     public boolean turnTowards(Obj other, float speed)
