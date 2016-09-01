@@ -16,7 +16,7 @@ public class MonsterControl extends AbstractControl
     private ObjMonster monster;
     private LevelMap level;
     private static int smellDistance = 10;
-    private static int attackDistance = 3;
+    private static int attackDistance = 1;
     private Random r = new Random();
     private float speed = r.nextFloat()*2f+2f;
 
